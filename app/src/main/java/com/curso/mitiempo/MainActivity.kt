@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
                         val urlDatosFinales = respuestaUrl.datos
                         Log.d(TAG, "URL de datos obtenida: $urlDatosFinales")
 
+                        delay(2000)
                         // --- SEGUNDA LLAMADA: Obtener los datos del tiempo ---
                         // Para la segunda llamada, la URL completa viene en la respuesta anterior.
                         // Por eso, la URL base de Retrofit debe ser una genérica, y pasamos la URL completa en la llamada.
@@ -100,8 +101,10 @@ class MainActivity : AppCompatActivity() {
                                     "Datos de predicción recibidos: $prediccion"
                                 )
 
-                                // TODO: Aquí iría el código que quieres ejecutar después del delay
-                                // Por ejemplo, actualizar un TextView.
+                                //Conseguir la temperatura mínima y máxima de hoy
+                                Log.d(TAG, "Fecha elaboración: ${prediccion.first().elaborado}")
+                                val hoy = prediccion.first().prediccion.dia[0]
+                                Log.d(TAG, "Temperatura máxima de hoy: ${hoy.temperatura.maxima}")
 
                             } else {
                                 Log.e(
