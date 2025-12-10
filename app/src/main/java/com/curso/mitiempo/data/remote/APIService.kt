@@ -1,6 +1,5 @@
 package com.curso.mitiempo.data.remote
 
-import com.curso.mitiempo.PrediccionResponse
 import com.curso.mitiempo.data.remote.dto.Aemet
 import com.curso.mitiempo.data.remote.dto.PrediccionMunicipioResponse
 import retrofit2.Response

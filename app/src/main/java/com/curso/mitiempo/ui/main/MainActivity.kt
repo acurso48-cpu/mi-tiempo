@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.curso.mitiempo.BuildConfig
 import com.curso.mitiempo.data.remote.dto.Prediccion // Asegúrate de importar tu modelo
 import com.curso.mitiempo.data.remote.APIService
@@ -84,54 +85,71 @@ class MainActivity : AppCompatActivity() {
             .build()
     }
 
+    /**
+     * Orquesta el proceso de obtención de datos del tiempo desde la AEMET.
+     * Utiliza `lifecycleScope` para lanzar una corrutina de forma segura.
+     *
+     * @param codigoPoblacion El código del municipio para el cual se solicita la predicción.
+     */
     private fun getDatosAemet(codigoPoblacion: String) {
         showLoading()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        // `lifecycleScope` es la forma correcta y segura de lanzar corrutinas en una Activity.
+        // Se cancela automáticamente si la pantalla se destruye, evitando errores y fugas de memoria.
+        lifecycleScope.launch {
             try {
-                val retrofitPaso1 = getRetrofit(urlMunicipio)
-                val servicePaso1 = retrofitPaso1.create(APIService::class.java)
-                val responseUrl = servicePaso1.getUrlAemet(codigoPoblacion, miApiKey)
+                // `withContext(Dispatchers.IO)` ejecuta la lógica de red en un hilo secundario
+                // para no bloquear la interfaz de usuario. Al finalizar, devuelve el resultado.
+                val prediccionFinal = withContext(Dispatchers.IO) {
+                    Log.d(TAG, "Iniciando llamadas de red en hilo secundario...")
 
-                if (responseUrl.isSuccessful && responseUrl.body()?.estado == 200) {
+                    // --- PASO 1: Obtener la URL de los datos ---
+                    val retrofitPaso1 = getRetrofit(urlMunicipio)
+                    val servicePaso1 = retrofitPaso1.create(APIService::class.java)
+                    val responseUrl = servicePaso1.getUrlAemet(codigoPoblacion, miApiKey)
+
+                    // Si la llamada falla o el estado no es 200, lanzamos un error que será
+                    // capturado por el bloque 'catch'.
+                    if (!responseUrl.isSuccessful || responseUrl.body()?.estado != 200) {
+                        throw Exception("Error al obtener la URL de datos: ${responseUrl.body()?.descripcion}")
+                    }
+
                     val urlDatosFinales = responseUrl.body()!!.datos
                     Log.d(TAG, "URL de datos obtenida: $urlDatosFinales")
 
+                    // La API de AEMET requiere una pausa entre la primera y la segunda llamada.
                     delay(2000)
 
+                    // --- PASO 2: Obtener la predicción del tiempo ---
                     val retrofitPaso2 = getRetrofit("https://opendata.aemet.es/")
                     val servicePaso2 = retrofitPaso2.create(APIService::class.java)
                     val responsePrediccion = servicePaso2.getPrediccion(urlDatosFinales)
 
-                    withContext(Dispatchers.Main) {
-                        if (responsePrediccion.isSuccessful && responsePrediccion.body() != null) {
-                            val prediccionCompleta = responsePrediccion.body()!!.first()
-                            val prediccionHoy = prediccionCompleta.prediccion.dia.first()
-
-                            Log.d(TAG, "Datos de predicción de temperatura recibidos: ${prediccionHoy.temperatura}")
-                            Log.d(TAG, "Temperatura máxima: ${prediccionHoy.temperatura.maxima}ªC")
-                            Log.d(TAG, "Temperatura mínima: ${prediccionHoy.temperatura.minima}ªC")
-
-                          showWeatherData(prediccionCompleta.prediccion)
-                        } else {
-                            val errorMsg = "Error en la segunda llamada: ${responsePrediccion.errorBody()?.string()}"
-                            Log.e(TAG, errorMsg)
-                            showError(errorMsg)
-                        }
+                    if (!responsePrediccion.isSuccessful) {
+                        throw Exception("Error al obtener la predicción final.")
                     }
-                } else {
-                    val errorMsg = "Error en la primera llamada: ${responseUrl.body()?.descripcion ?: responseUrl.errorBody()?.string()}"
-                    Log.e(TAG, errorMsg)
-                    withContext(Dispatchers.Main) {
-                        showError(errorMsg)
-                    }
+
+                    // Se devuelve el primer elemento de la respuesta, que será el resultado de `withContext`.
+                    // Este será el objeto `PrediccionMunicipioResponseItem` que esperamos.
+                    responsePrediccion.body()!!.first()
                 }
+
+                // Al salir de `withContext`, el código continúa en el hilo principal (Main).
+                // Aquí podemos actualizar la UI de forma segura con el resultado obtenido.
+                Log.d(TAG, "Llamadas de red completadas. Actualizando UI...")
+                Log.d(TAG, "Temperatura máxima: ${prediccionFinal.prediccion.dia.first().temperatura.maxima}ªC")
+                Log.d(TAG, "Temperatura mínima: ${prediccionFinal.prediccion.dia.first().temperatura.minima}ªC")
+
+                showWeatherData(prediccionFinal.prediccion)
+
             } catch (e: Exception) {
+                // El bloque `catch` maneja cualquier excepción lanzada en el `try`,
+                // incluyendo errores de red o las excepciones que lanzamos manualmente.
+                // Como este bloque se ejecuta en el hilo principal, podemos actualizar la UI.
                 Log.e(TAG, "Excepción en getDatosAemet: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    showError("Fallo en la conexión: ${e.message}")
-                }
+                showError("Fallo al obtener los datos: ${e.message}")
             }
         }
     }
+
 }
