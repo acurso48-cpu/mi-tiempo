@@ -8,5 +8,11 @@ data class PrediccionResponse(
 )
 
 data class PrediccionDia(
-    val dia: List<Any>
+    val dia: List<Dia>
+)
+
+data class Dia (
+   val  probPrecipitacion : List<Any>,
+    val cotaNieveProv : List<Any>,
+    val temperatura : List<Any>
 )

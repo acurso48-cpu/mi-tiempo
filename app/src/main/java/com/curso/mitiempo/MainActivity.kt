@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                                 //Conseguir la temperatura mínima y máxima de hoy
                                 Log.d(TAG, "Fecha elaboración: ${prediccion.first().elaborado}")
                                 val hoy = prediccion.first().prediccion.dia[0]
-                                Log.d(TAG, "Temperatura máxima de hoy: ${hoy.temperatura.maxima}")
+                                Log.d(TAG, "Temperatura máxima de hoy: ${hoy}")
 
                             } else {
                                 Log.e(
