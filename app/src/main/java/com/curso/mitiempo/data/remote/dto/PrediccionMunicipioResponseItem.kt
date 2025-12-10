@@ -1,6 +1,6 @@
 package com.curso.mitiempo.data.remote.dto
 
-import com.curso.mitiempo.data.model.Prediccion
+import com.curso.mitiempo.data.remote.dto.Prediccion
 
 data class PrediccionMunicipioResponseItem(
     val elaborado: String,

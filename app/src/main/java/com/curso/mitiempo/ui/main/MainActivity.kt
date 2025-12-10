@@ -5,8 +5,10 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.curso.mitiempo.BuildConfig
-import com.curso.mitiempo.data.model.Prediccion // Asegúrate de importar tu modelo
+import com.curso.mitiempo.data.remote.dto.Prediccion // Asegúrate de importar tu modelo
 import com.curso.mitiempo.data.remote.APIService
+import com.curso.mitiempo.data.remote.dto.PrediccionMunicipioResponse
+import com.curso.mitiempo.data.remote.dto.PrediccionMunicipioResponseItem
 import com.curso.mitiempo.databinding.ActivityMainBinding // <-- 1. Importar la clase de Binding
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -50,15 +52,18 @@ class MainActivity : AppCompatActivity() {
         binding.errorTextView.visibility = View.GONE
     }
 
-/*    private fun showWeatherData(prediccion: Prediccion) {
-        val hoy = prediccion.prediccion.dia.first() // Tomamos el primer día de la lista
+   private fun showWeatherData(prediccion: Prediccion) {
+        val hoy = prediccion.dia.first() // Tomamos el primer día de la lista
+        Log.d(TAG, "Temperatura máxima hoy: ${hoy.temperatura.maxima}")
+
         binding.maxTempTextView.text = "Máx: ${hoy.temperatura.maxima}°C"
         binding.minTempTextView.text = "Mín: ${hoy.temperatura.minima}°C"
-
         binding.progressBar.visibility = View.GONE
         binding.weatherDataContainer.visibility = View.VISIBLE
         binding.errorTextView.visibility = View.GONE
-    }*/
+
+
+    }
 
     private fun showError(message: String) {
         binding.errorTextView.text = message
@@ -107,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, "Temperatura máxima: ${prediccionHoy.temperatura.maxima}ªC")
                             Log.d(TAG, "Temperatura mínima: ${prediccionHoy.temperatura.minima}ªC")
 
-                       //     showWeatherData(prediccionCompleta)
+                          showWeatherData(prediccionCompleta.prediccion)
                         } else {
                             val errorMsg = "Error en la segunda llamada: ${responsePrediccion.errorBody()?.string()}"
                             Log.e(TAG, errorMsg)
