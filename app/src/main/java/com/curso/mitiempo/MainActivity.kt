@@ -100,27 +100,18 @@ class MainActivity : AppCompatActivity() {
                                     "Datos de predicción recibidos: $prediccion"
                                 )
 
-                                // --- AQUÍ ESTÁ EL DELAY ---
-                                Log.d(TAG, "Esperando 3 segundos antes de continuar...")
-                                delay(3000) // Espera 3000 milisegundos (3 segundos)
-                                Log.d(TAG, "Espera finalizada.")
-
                                 // TODO: Aquí iría el código que quieres ejecutar después del delay
                                 // Por ejemplo, actualizar un TextView.
 
                             } else {
                                 Log.e(
-                                    TAG,
-                                    "Error en la segunda llamada: ${
-                                        callPaso2.errorBody()?.string()
+                                    TAG, "Error en la segunda llamada: ${callPaso2.errorBody()?.string()
                                     }"
                                 )
                             }
                         }
                     } else {
-                        Log.e(
-                            TAG,
-                            "Respuesta del servidor (Paso 1) no fue exitosa: ${respuestaUrl?.descripcion}"
+                        Log.e(TAG, "Respuesta del servidor (Paso 1) no fue exitosa: ${respuestaUrl?.descripcion}"
                         )
                     }
                 } else {
