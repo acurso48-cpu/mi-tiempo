@@ -123,7 +123,7 @@ private fun getRetrofit(baseUrl: String): Retrofit {
 
 1.  El JSON de la segunda llamada es mucho más grande y complejo. Búscalo también en el Logcat. Empieza con `[` y contiene toda la predicción.
 2.  **Copia TODO ese JSON**.
-3.  Repite el proceso: Clic derecho en el paquete `dto` -> `New` -> `Kotlin data class File from JSON`.
+3.  Repite el proceso: Clic derecho en el paquete `data` -> `New` -> `Kotlin data class File from JSON`.
 4.  Pega el JSON gigante, ponle el nombre `PrediccionMunicipioResponseItem` y dale a `Generate`. El plugin creará esta clase y todas las demás que necesita (`Prediccion`, `Dia`, `Temperatura`, etc.) en un solo fichero.
 
 **¡Acabas de ahorrarte una hora de trabajo y posibles errores!**
