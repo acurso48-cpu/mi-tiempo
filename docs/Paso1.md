@@ -48,10 +48,10 @@ Nunca debemos escribir una clave de API directamente en el código. Vamos a guar
     }
 
     // Lee el fichero local.properties
-    val localProperties = java.util.Properties()
+    val localProperties = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
-        localProperties.load(java.io.FileInputStream(localPropertiesFile))
+    localProperties.load(localPropertiesFile.inputStream())
     }
 
     android.defaultConfig {
