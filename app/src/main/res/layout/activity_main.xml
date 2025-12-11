@@ -31,6 +31,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/labelTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Temperatura en Getafe"
@@ -51,6 +52,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textSize="24sp"
+            tools:text="Mín: 15°C" />
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="18sp"
             tools:text="Mín: 15°C" />
 
     </LinearLayout>

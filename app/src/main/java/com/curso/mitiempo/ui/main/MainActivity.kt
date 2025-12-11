@@ -37,13 +37,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (miApiKey.isEmpty() || miApiKey == "PON_TU_API_KEY_AQUÍ") {
+        if (miApiKey.isEmpty()) {
             Log.w(TAG, "La clave de AEMET no está configurada o es la de ejemplo.")
             showError("API Key no configurada.")
         } else {
             Log.d(TAG, "API Key: $miApiKey")
-            getDatosAemet("28065")
-        }
+          //  getDatosAemet("28065") //Getafe
+            getDatosAemet("02003") //Albacete
+         }
     }
 
     // 4. Usar 'binding' para acceder a las vistas
@@ -53,12 +54,17 @@ class MainActivity : AppCompatActivity() {
         binding.errorTextView.visibility = View.GONE
     }
 
-   private fun showWeatherData(prediccion: Prediccion) {
-        val hoy = prediccion.dia.first() // Tomamos el primer día de la lista
-        Log.d(TAG, "Temperatura máxima hoy: ${hoy.temperatura.maxima}")
+   private fun showWeatherData(prediccionMunicipio: PrediccionMunicipioResponseItem) {
 
+        val hoy = prediccionMunicipio.prediccion.dia.first() // Tomamos el primer día de la lista
+        Log.d(TAG, "Temperatura máxima hoy: ${hoy.temperatura.maxima}")
+        val fechaElaboracion = prediccionMunicipio.elaborado
+        val diaElaboracion = fechaElaboracion.split("T")[0].split("-")
+        val hora = fechaElaboracion.split("T")[1]
+        binding.labelTemp.text = "Temperatura en ${prediccionMunicipio.nombre}"
         binding.maxTempTextView.text = "Máx: ${hoy.temperatura.maxima}°C"
         binding.minTempTextView.text = "Mín: ${hoy.temperatura.minima}°C"
+        binding.dateTextView.text="    Actualizado a las:\n$hora ${diaElaboracion[2]}/${diaElaboracion[1]}/${diaElaboracion[0]}"
         binding.progressBar.visibility = View.GONE
         binding.weatherDataContainer.visibility = View.VISIBLE
         binding.errorTextView.visibility = View.GONE
@@ -140,7 +146,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "Temperatura máxima: ${prediccionFinal.prediccion.dia.first().temperatura.maxima}ªC")
                 Log.d(TAG, "Temperatura mínima: ${prediccionFinal.prediccion.dia.first().temperatura.minima}ªC")
 
-                showWeatherData(prediccionFinal.prediccion)
+                showWeatherData(prediccionFinal)
 
             } catch (e: Exception) {
                 // El bloque `catch` maneja cualquier excepción lanzada en el `try`,
