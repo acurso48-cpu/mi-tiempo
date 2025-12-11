@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.d(TAG, "API Key: $miApiKey")
           //  getDatosAemet("28065") //Getafe
-            getDatosAemet("02003") //Albacete
+            getDatosAemet("38026") //02003 Albacete 38026 Orotava
          }
     }
 
